@@ -1,28 +1,3 @@
-// model
-let db = {
-  donuts: [],
-}
-let uuid = require('uuid/v4')
-
-function createDonut(type, price, brand, rating) {
-  let donut = {
-    id:uuid(),
-    type,
-    price,
-    brand,
-    rating
-  }
-  db.donuts.push(donut)
-  return donut
-}
-
-function getAllDonuts() {
-  return db.donuts
-}
-
-function getDonutById(id) {
-  return db.donuts.find(donut => donut.id == id)
-}
 
 // route
 let express = require('express')
@@ -33,23 +8,13 @@ let app = express()
 app.use(cors())
 app.use(bodyParser.json())
 
+let Donut = require('./models/Donut')
+let donutController = require('./controllers/donut-controller')
+
 // GET routes
-app.get('/donuts', (req, res) => {
-  let donuts = getAllDonuts()
-  res.json({data: donuts})
-})
-
-app.get('/donuts/:id', (req, res) => {
-  let id = req.params.id
-  let donut = getDonutById(id)
-  res.json({data: donut})
-})
-
-app.post('/donuts', (req, res) => {
-  let {type, price, brand, rating} = req.body
-  let donut = createDonut(type, price, brand, rating)
-  res.json({data: donut})
-})
+app.get('/donuts', donutController.getAllDonuts)
+app.get('/donuts/:id', donutController.getDonutById)
+app.post('/donuts', donutController.createDonut)
 
 const PORT = process.env.PORT || 3000
 app.listen(PORT, () => console.log(`Listening on port: ${PORT}`))
